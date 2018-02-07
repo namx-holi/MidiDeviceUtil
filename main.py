@@ -14,7 +14,7 @@ import midihandler
 import helpers
 
 WINDOW_TITLE = "Midi Controller Listener"
-DEVICE_TREE_COLUMNS = ["Id", "Driver", "Controller", "Is Input"]
+DEVICE_TREE_COLUMNS = ["Id", "Driver", "Controller", "I/O"]
 
 
 class Application(tk.Frame):
@@ -26,6 +26,7 @@ class Application(tk.Frame):
 		self.pack()
 		self.create_widgets(master)
 		self.build_device_tree()
+		self.poll()
 
 
 	def create_widgets(self, master):
@@ -60,27 +61,40 @@ class Application(tk.Frame):
 			xscrollcommand=device_tree_hsb.set
 		)
 		self.device_tree.grid(
-			row=1, column=0, sticky="nsew"
+			row=1, column=0, columnspan=2, sticky="nsew"
 		)
 		device_tree_vsb.grid(
-			row=1, column=1, sticky="ns"
+			row=1, column=2, sticky="nse"
 		)
 		device_tree_hsb.grid(
-			row=2, column=0, sticky="ew"
+			row=2, column=0, columnspan=2, sticky="ew"
 		)
-		self.grid_columnconfigure(0, weight=1)
-		self.grid_rowconfigure(0, weight=1)
-		self.device_tree.bind('<ButtonRelease-1>', self.selected_item)
+		# self.device_tree.bind('<ButtonRelease-1>', self.selected_item)
+
+
+		# Configure all rows and columns so they expand to fill cell
+		self.grid_columnconfigure(0, weight=3)
+		self.grid_columnconfigure(1, weight=4)
+		self.grid_rowconfigure(1, weight=1)
 
 
 		# Button to refresh list of devices
 		self.refresh_button = tk.Button(self,
 			text="Refresh",
-			command=self.update_device_tree,
-			anchor="s"
+			command=self.update_device_tree
 		)
 		self.refresh_button.grid(
-			row=3, column=0, sticky="w"
+			row=3, column=0, sticky="nsew"
+		)
+
+
+		# Button to connect to device
+		self.connect_button = tk.Button(self,
+			text="Connect to Device",
+			command=self.connect_to_selected_device
+		)
+		self.connect_button.grid(
+			row=3, column=1, columnspan=2, sticky="nsew"
 		)
 
 
@@ -108,39 +122,47 @@ class Application(tk.Frame):
 
 		self.devices = midihandler.getDeviceList()
 
+
 		for device in self.devices:
 			self.device_tree.insert("", "end", values=device)
 
-			# Adjust column's wifth if necessary to fit each value
+			# Adjust column's width if necessary to fit each value
 			for ix, val in enumerate(device):
-				col_w = tkFont.Font().measure(val)
+				col_w = max(tkFont.Font().measure(val), tkFont.Font().measure(DEVICE_TREE_COLUMNS[ix]))+10
+
 				if self.device_tree.column(DEVICE_TREE_COLUMNS[ix], width=None)<col_w:
 					self.device_tree.column(DEVICE_TREE_COLUMNS[ix], width=col_w)
 
 
-	def selected_item(self, event):
+	def poll(self):
 		# Item was selected!
 		curItem = self.device_tree.focus()
 		now = self.device_tree.item(curItem)["values"]
 
+		if now != self.selected_device:
+			self.selection_changed(now)
+			self.selected_device = now
+		self.after(250, self.poll)
 
-		print(now)
 
-	# def selection_changed(self, selection):
-	# 	if selection is None or selection is ():
-	# 		print("No selected item.")
-	# 	else:
-	# 		print("Selection is now {}.".format(
-	# 			self.devices[selection[0]]))
+	def selection_changed(self, selection):
+		if selection is None or selection is "":
+			print("No selected item.")
+		else:
+			print("Selection is now {}.".format(selection))
 
 
 	def connect_to_selected_device(self):
-		pass
+		if self.selected_device == "":
+			print("No selected device to connect to.")
+		else:
+			print("THIS WOULD CONNECT TO SELECTED DEVICE <{}>".format(self.selected_device[2]))
 
 
 # create root and configure
 root = tk.Tk()
 root.title(WINDOW_TITLE)
+root.resizable(0,0)
 
 # start up the application
 app = Application(master=root)
