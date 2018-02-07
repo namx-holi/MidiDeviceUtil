@@ -69,7 +69,6 @@ class Application(tk.Frame):
 		device_tree_hsb.grid(
 			row=2, column=0, columnspan=2, sticky="ew"
 		)
-		# self.device_tree.bind('<ButtonRelease-1>', self.selected_item)
 
 
 		# Configure all rows and columns so they expand to fill cell
@@ -109,7 +108,7 @@ class Application(tk.Frame):
 			# Adjust the column's width to the header string
 			self.device_tree.column(
 				col,
-				width=tkFont.Font().measure(col.title())
+				width=tkFont.Font().measure(col.title())+10
 			)
 
 		self.update_device_tree()
@@ -156,7 +155,24 @@ class Application(tk.Frame):
 		if self.selected_device == "":
 			print("No selected device to connect to.")
 		else:
-			print("THIS WOULD CONNECT TO SELECTED DEVICE <{}>".format(self.selected_device[2]))
+			if self.selected_device[3] == u'Input':
+				print("Conencting to INPUT device {}.".format(
+					self.selected_device[1]
+				))
+				midihandler.connect_to_input(
+					self.selected_device[0],
+					self.selected_device[2]
+				)
+			elif self.selected_device[3] == u'Output':
+				print("Conencting to OUTPUT device {}.".format(
+					self.selected_device[1]
+				))
+				midihandler.connect_to_output(
+					self.selected_device[0],
+					self.selected_device[2]
+				)
+			else:
+				print("Something went really wrong here.")
 
 
 # create root and configure
