@@ -23,11 +23,11 @@ def getDeviceList():
 		if (is_input and is_output) or (not is_input and not is_output):
 			raise Exception("Not sure what happened here")
 
-		devices.append({
-			"driver": driver,
-			"connection": connection,
-			"is_input": True if is_input else False
-		})
+		devices.append((
+			device_id,
+			driver,
+			connection,
+			True if is_input else False
+		))
 
 	return devices
-	
