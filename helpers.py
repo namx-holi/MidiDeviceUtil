@@ -13,7 +13,7 @@ Description of file
 import unicodedata
 
 
-def sortby(tree, col, descending):
+def sort_by_col(tree, col, descending):
 	"""
 	Sorts a tree contents when a column header is clicked on
 	"""
@@ -36,7 +36,7 @@ def sortby(tree, col, descending):
 	# Switch the heading so it will sort in the opposite direction
 	tree.heading(
 		col,
-		command=lambda c=col: sortby(tree, c, int(not descending))
+		command=lambda c=col: sort_by_col(tree, c, int(not descending))
 	)
 
 

@@ -98,7 +98,7 @@ class Application(tk.Frame):
 			self.event_tree.heading(
 				col,
 				text=col.title(),
-				command=lambda c=col: helpers.sortby(self.event_tree, c, 0)
+				command=lambda c=col: helpers.sort_by_col(self.event_tree, c, 0)
 			)
 
 			# Adjust the column's width to the header string
@@ -115,7 +115,7 @@ class Application(tk.Frame):
 			line = helpers.event_parser(events[0])
 
 			self.event_tree.insert("", "end", values=line)
-			helpers.sortby(self.event_tree, "Timestamp", 1)
+			helpers.sort_by_col(self.event_tree, "Timestamp", 1)
 
 			for ix, val in enumerate(line):
 				col_w = max(tkFont.Font().measure(val), tkFont.Font().measure(EVENT_TREE_COLUMNS[ix]))+10

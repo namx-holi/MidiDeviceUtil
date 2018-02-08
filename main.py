@@ -125,7 +125,7 @@ class Application(tk.Frame):
 		# Clear tree
 		self.device_tree.delete(*self.device_tree.get_children())
 
-		self.devices = midihandler.getDeviceList()
+		self.devices = midihandler.gesort_by_col()
 
 
 		for device in self.devices:
