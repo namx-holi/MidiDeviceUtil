@@ -1,17 +1,22 @@
-#!
+
 
 """
+main.py
+
 Description of file
 
 @author: namx-holi
 @date:   2018-02-07
 """
 
+
 import Tkinter as tk
 import tkFont
 import ttk
-import midihandler
+
 import helpers
+import midihandler
+
 
 WINDOW_TITLE = "Midi Controller Listener"
 DEVICE_TREE_COLUMNS = ["Id", "Driver", "Controller", "I/O"]
@@ -21,8 +26,11 @@ class Application(tk.Frame):
 
 	selected_device = None
 
+
 	def __init__(self, master=None):
+
 		tk.Frame.__init__(self, master)
+
 		self.pack()
 		self.create_widgets(master)
 		self.build_device_tree()
@@ -41,7 +49,6 @@ class Application(tk.Frame):
 		msg.grid(
 			row=0, column=0, columnspan=2, sticky="ew"
 		)
-
 
 		# Creating treeview with dual scrollbars
 		self.device_tree = ttk.Treeview(self,
@@ -70,7 +77,6 @@ class Application(tk.Frame):
 			row=2, column=0, columnspan=2, sticky="ew"
 		)
 
-
 		# Configure all rows and columns so they expand to fill cell
 		self.grid_columnconfigure(0, weight=3)
 		self.grid_columnconfigure(1, weight=4)
@@ -86,7 +92,6 @@ class Application(tk.Frame):
 			row=3, column=0, sticky="nsew"
 		)
 
-
 		# Button to connect to device
 		self.connect_button = tk.Button(self,
 			text="Connect to Device",
@@ -98,6 +103,7 @@ class Application(tk.Frame):
 
 
 	def build_device_tree(self):
+
 		for col in DEVICE_TREE_COLUMNS:
 			self.device_tree.heading(
 				col,
@@ -134,6 +140,7 @@ class Application(tk.Frame):
 
 
 	def poll(self):
+
 		# Item was selected!
 		curItem = self.device_tree.focus()
 		now = self.device_tree.item(curItem)["values"]
@@ -145,6 +152,7 @@ class Application(tk.Frame):
 
 
 	def selection_changed(self, selection):
+
 		if selection is None or selection is "":
 			print("No selected item.")
 		else:
@@ -152,6 +160,7 @@ class Application(tk.Frame):
 
 
 	def connect_to_selected_device(self):
+
 		if self.selected_device == "":
 			print("No selected device to connect to.")
 		else:

@@ -1,12 +1,24 @@
 
 
+"""
+outputwindow.py
+
+Description of file
+
+@author: namx-holi
+@date:   2018-02-07
+"""
+
+
 import Tkinter as tk
 import tkFont
 import ttk
+
 import sys
 
 from pygame import midi
 midi.init()
+
 
 # get the ID from the options
 device_id = int(sys.argv[1])
@@ -16,11 +28,14 @@ device_name = sys.argv[2]
 
 WINDOW_TITLE = "Midi Controller Listener - {} (OUTPUT)".format(device_name)
 
+
 class Application(tk.Frame):
 
 	device = None
 
+
 	def __init__(self, device_id, master=None):
+
 		tk.Frame.__init__(self, master)
 
 		self.device = midi.Output(device_id)
@@ -31,14 +46,15 @@ class Application(tk.Frame):
 
 
 	def create_widgets(self, master):
+
 		pass
 
 
 	def poll(self):
+
 		pass
 
 		self.after(250, self.poll)
-
 
 
 # create root and configure

@@ -1,13 +1,25 @@
 
 
+"""
+inputwindow.py
+
+Description of file
+
+@author: namx-holi
+@date:   2018-02-07
+"""
+
+
 import Tkinter as tk
 import tkFont
 import ttk
-import sys
+
 import helpers
+import sys
 
 from pygame import midi
 midi.init()
+
 
 # get the ID from the options
 device_id = int(sys.argv[1])
@@ -16,13 +28,16 @@ device_id = int(sys.argv[1])
 device_name = sys.argv[2]
 
 WINDOW_TITLE = "Midi Controller Listener - {} (INPUT)".format(device_name)
-EVENT_TREE_COLUMNS = ["Timestamp", "Var1", "Var2", "Var3", "Var4"]
+EVENT_TREE_COLUMNS = ["Timestamp", "Channel", "Note", "Velocity", "Var4"]
+
 
 class Application(tk.Frame):
 
 	device = None
 
+
 	def __init__(self, device_id, master=None):
+
 		tk.Frame.__init__(self, master)
 
 		self.device = midi.Input(device_id)
@@ -45,7 +60,6 @@ class Application(tk.Frame):
 		msg.grid(
 			row=0, column=0, columnspan=2, sticky="ew"
 		)
-
 
 		# Creating treeview with dual scrollbars
 		self.event_tree = ttk.Treeview(self,
@@ -79,6 +93,7 @@ class Application(tk.Frame):
 
 
 	def build_event_tree(self):
+
 		for col in EVENT_TREE_COLUMNS:
 			self.event_tree.heading(
 				col,

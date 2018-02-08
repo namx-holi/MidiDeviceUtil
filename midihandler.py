@@ -1,23 +1,34 @@
+
+
 """
-Device Handler
+midihandler.py
+
+Description of file
+
+@author: namx-holi
+@date:   2018-02-07
 """
 
+
 import subprocess
+
 from pygame import midi
 midi.init()
 
 
-
 def getDeviceList():
+	"""
+	THIS IS VERY VERY DUMB
+	
+	This is done because to get the correct count of midi devices,
+	the python process needs to be restarted, or started fresh.
+	"""
 
-	# THIS IS VERY VERY DUMB
-	# 
-	# This is done because to get the correct count of midi devices,
-	# the python process needs to be restarted, or started fresh.
 	test = subprocess.check_output(
 		["python", "-c", "import midihandler;midihandler._getDeviceList()"]
 	)
 	exec("devices = {}".format(test))
+	
 	return devices
 	
 
@@ -51,8 +62,10 @@ def _getDeviceList():
 
 
 def connect_to_input(id, name):
+
 	subprocess.Popen(["python", "inputwindow.py", str(id), name])
 
 
 def connect_to_output(id, name):
+
 	subprocess.Popen(["python", "outputwindow.py", str(id), name])
