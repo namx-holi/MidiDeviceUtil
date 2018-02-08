@@ -16,7 +16,7 @@ from pygame import midi
 midi.init()
 
 
-def gesort_by_col():
+def get_device_list():
 	"""
 	THIS IS VERY VERY DUMB
 	
@@ -25,14 +25,14 @@ def gesort_by_col():
 	"""
 
 	test = subprocess.check_output(
-		["python", "-c", "import midihandler;midihandler._gesort_by_col()"]
+		["python", "-c", "import midihandler;midihandler._get_device_list()"]
 	)
 	exec("devices = {}".format(test))
 	
 	return devices
 	
 
-def _gesort_by_col():
+def _get_device_list():
 
 	from pygame import midi
 	midi.init()
