@@ -126,10 +126,18 @@ class Application(tk.Frame):
 		self.after(250, self.poll)
 
 
+	def on_closing(self):
+
+		self.device.close()
+		root.destroy()
+
+
 # create root and configure
 root = tk.Tk()
 root.title(WINDOW_TITLE)
 
 # start up the application
 app = Application(device_id, master=root)
+root.protocol("WM_DELETE_WINDOW", app.on_closing)
+
 app.mainloop()
