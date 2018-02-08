@@ -66,6 +66,7 @@ class Application(tk.Frame):
 # create root and configure
 root = tk.Tk()
 root.title(WINDOW_TITLE)
+root.resizable(0,0)
 
 # start up the application
 app = Application(device_id, master=root)

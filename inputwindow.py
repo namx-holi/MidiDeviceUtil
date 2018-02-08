@@ -28,7 +28,11 @@ device_id = int(sys.argv[1])
 device_name = sys.argv[2]
 
 WINDOW_TITLE = "Midi Controller Listener - {} (INPUT)".format(device_name)
-EVENT_TREE_COLUMNS = ["Timestamp", "Channel", "Note", "Velocity", "Var4"]
+EVENT_TREE_COLUMNS = ["Timestamp", "Message", "Channel", "Note", "Velocity"]
+
+# These values are the length of the longest thing that can pop up in each
+# column plus 10 units
+COL_WIDTHS = [88, 138, 67, 43, 65]
 
 
 class Application(tk.Frame):
@@ -45,6 +49,7 @@ class Application(tk.Frame):
 		self.pack()
 		self.create_widgets(master)
 		self.build_event_tree()
+
 		self.poll()
 
 
@@ -94,18 +99,15 @@ class Application(tk.Frame):
 
 	def build_event_tree(self):
 
-		for col in EVENT_TREE_COLUMNS:
+		for ix, col in enumerate(EVENT_TREE_COLUMNS):
 			self.event_tree.heading(
 				col,
 				text=col.title(),
 				command=lambda c=col: helpers.sort_by_col(self.event_tree, c, 0)
 			)
 
-			# Adjust the column's width to the header string
-			self.event_tree.column(
-				col,
-				width=tkFont.Font().measure(col.title())+10
-			)
+			# Adjust the column's widths
+			self.event_tree.column(col, width=COL_WIDTHS[ix])
 
 
 	def poll(self):
@@ -115,13 +117,7 @@ class Application(tk.Frame):
 			line = helpers.event_parser(events[0])
 
 			self.event_tree.insert("", "end", values=line)
-			helpers.sort_by_col(self.event_tree, "Timestamp", 1)
-
-			for ix, val in enumerate(line):
-				col_w = max(tkFont.Font().measure(val), tkFont.Font().measure(EVENT_TREE_COLUMNS[ix]))+10
-
-				if self.event_tree.column(EVENT_TREE_COLUMNS[ix], width=None)<col_w:
-					self.event_tree.column(EVENT_TREE_COLUMNS[ix], width=col_w)
+			helpers.sort_by_col(self.event_tree, EVENT_TREE_COLUMNS[0], 1)
 
 		self.after(250, self.poll)
 
@@ -135,6 +131,7 @@ class Application(tk.Frame):
 # create root and configure
 root = tk.Tk()
 root.title(WINDOW_TITLE)
+root.resizable(0,0)
 
 # start up the application
 app = Application(device_id, master=root)
