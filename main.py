@@ -168,7 +168,7 @@ class Application(tk.Frame):
 				print("Conencting to INPUT device {}.".format(
 					self.selected_device[1]
 				))
-				midihandler.connect_to_input(
+				helpers.open_event_viewer(
 					self.selected_device[0],
 					self.selected_device[2]
 				)
@@ -176,7 +176,7 @@ class Application(tk.Frame):
 				print("Conencting to OUTPUT device {}.".format(
 					self.selected_device[1]
 				))
-				midihandler.connect_to_output(
+				helpers.open_event_sender(
 					self.selected_device[0],
 					self.selected_device[2]
 				)

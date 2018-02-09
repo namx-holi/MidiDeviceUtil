@@ -15,6 +15,7 @@ import tkFont
 import ttk
 
 import helpers
+import midihandler
 import sys
 
 from pygame import midi
@@ -27,7 +28,7 @@ device_id = int(sys.argv[1])
 # get the name from the options
 device_name = sys.argv[2]
 
-WINDOW_TITLE = "Midi Controller Listener - {} (INPUT)".format(device_name)
+WINDOW_TITLE = "Midi Event Viewer - {}".format(device_name)
 EVENT_TREE_COLUMNS = ["Timestamp", "Message", "Channel", "Note", "Velocity"]
 
 # These values are the length of the longest thing that can pop up in each
@@ -114,12 +115,12 @@ class Application(tk.Frame):
 
 		while self.device.poll():
 			events = self.device.read(1)
-			line = helpers.event_parser(events[0])
+			line = midihandler.event_parser(events[0])
 
 			self.event_tree.insert("", "end", values=line)
 			helpers.sort_by_col(self.event_tree, EVENT_TREE_COLUMNS[0], 1)
 
-		self.after(250, self.poll)
+		self.after(25, self.poll)
 
 
 	def on_closing(self):

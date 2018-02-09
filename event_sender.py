@@ -26,7 +26,7 @@ device_id = int(sys.argv[1])
 # get the name from the options
 device_name = sys.argv[2]
 
-WINDOW_TITLE = "Midi Controller Listener - {} (OUTPUT)".format(device_name)
+WINDOW_TITLE = "Midi Event Sender - {}".format(device_name)
 
 
 class Application(tk.Frame):

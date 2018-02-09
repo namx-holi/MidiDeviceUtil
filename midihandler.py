@@ -28,7 +28,7 @@ def get_device_list():
 		["python", "-c", "import midihandler;midihandler._get_device_list()"]
 	)
 	exec("devices = {}".format(test))
-	
+
 	return devices
 	
 
@@ -61,11 +61,41 @@ def _get_device_list():
 	print(devices)
 
 
-def connect_to_input(id, name):
+def event_parser(event):
 
-	subprocess.Popen(["python", "inputwindow.py", str(id), name])
+	details = event[0]
+	timestamp = event[1]
+
+	byte0 = details[0]
+	byte1 = details[1]
+	byte2 = details[2]
+
+	message_code = (byte0 & 0xf0) >> 4
+	message = lookup_message(message_code)
+
+	channel = (byte0 & 0x0f) + 1
+
+	note = byte1
+	velocity = byte2
+
+	return [timestamp, message, channel, note, velocity]
 
 
-def connect_to_output(id, name):
+def lookup_message(message_code):
 
-	subprocess.Popen(["python", "outputwindow.py", str(id), name])
+	if message_code == 0x8:
+		return "Note Off"
+	elif message_code == 0x9:
+		return "Note On"
+	elif message_code == 0xa:
+		return "Poly Key Pressure"
+	elif message_code == 0xb:
+		return "Controller Change"
+	elif message_code == 0xc:
+		return "Program Change"
+	elif message_code == 0xd:
+		return "Channel Pressure"
+	elif message_code == 0xe:
+		return "Pitch Bend"
+	else:
+		return "???"
