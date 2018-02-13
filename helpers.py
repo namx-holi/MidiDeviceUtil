@@ -74,3 +74,8 @@ def open_event_viewer(id, name):
 def open_event_sender(id, name):
 
 	subprocess.Popen(["python", "event_sender.py", str(id), name])
+
+
+def open_event_grid(id, name):
+
+	subprocess.Popen(["python", "event_grid.py", str(id), name])

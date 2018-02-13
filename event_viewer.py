@@ -97,6 +97,15 @@ class Application(tk.Frame):
 		self.grid_columnconfigure(0, weight=1)
 		self.grid_rowconfigure(1, weight=1)
 
+				# Button to connect to device
+		self.view_grid_button = tk.Button(self,
+			text="View as grid",
+			command=self.open_event_grid
+		)
+		self.view_grid_button.grid(
+			row=3, column=0, columnspan=2, sticky="nsew"
+		)
+
 
 	def build_event_tree(self):
 
@@ -121,6 +130,11 @@ class Application(tk.Frame):
 			helpers.sort_by_col(self.event_tree, EVENT_TREE_COLUMNS[0], 1)
 
 		self.after(25, self.poll)
+
+
+	def open_event_grid(self):
+
+		helpers.open_event_grid(device_id, device_name)
 
 
 	def on_closing(self):
