@@ -47,7 +47,14 @@ class Application(tk.Frame):
 
 	def create_widgets(self, master):
 
-		pass
+		# stub widget
+		stub = tk.Frame(self,
+			width=200,
+			height=200,
+			bg="white"
+		)
+		
+		stub.pack()
 
 
 	def poll(self):
