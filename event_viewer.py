@@ -1,7 +1,7 @@
 
 
 """
-inputwindow.py
+event_viewer.py
 
 Description of file
 

@@ -1,7 +1,7 @@
 
 
 """
-outputwindow.py
+event_sender.py
 
 Description of file
 

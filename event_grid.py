@@ -1,7 +1,7 @@
 
 
 """
-midigrid.py
+event_grid.py
 
 Description of file
 
