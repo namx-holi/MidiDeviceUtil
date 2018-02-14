@@ -1,69 +1,150 @@
-#!
+
 
 """
+main.py
+
 Description of file
 
 @author: namx-holi
 @date:   2018-02-07
 """
 
+
 import Tkinter as tk
+import tkFont
+import ttk
+
+import helpers
 import midihandler
 
+
 WINDOW_TITLE = "Midi Controller Listener"
-
-
+DEVICE_TREE_COLUMNS = ["Id", "Driver", "Controller", "I/O"]
 
 
 class Application(tk.Frame):
 
 	selected_device = None
-	devices = []
+
 
 	def __init__(self, master=None):
+
 		tk.Frame.__init__(self, master)
+
 		self.pack()
 		self.create_widgets(master)
+		self.build_device_tree()
 		self.poll()
 
 
 	def create_widgets(self, master):
-		# List of devices that can be connected to
-		self.device_list_scrollbar = tk.Scrollbar(self,
-			orient=tk.VERTICAL
+
+		s = """Device List"""
+		msg = ttk.Label(self,
+			wraplength="4i",
+			justify="left",
+			anchor="n",
+			padding=(10,2,10,6),
+			text=s)
+		msg.grid(
+			row=0, column=0, columnspan=2, sticky="ew"
 		)
-		self.device_list = tk.Listbox(self,
-			exportselection=0,
-			yscrollcommand=self.device_list_scrollbar.set
+
+		# Creating treeview with dual scrollbars
+		self.device_tree = ttk.Treeview(self,
+			columns=DEVICE_TREE_COLUMNS,
+			show="headings"
 		)
-		self.device_list_scrollbar.config(
-			command=self.device_list.yview
+		device_tree_vsb = ttk.Scrollbar(self,
+			orient="vertical",
+			command=self.device_tree.yview
 		)
+		device_tree_hsb = ttk.Scrollbar(self,
+			orient="horizontal",
+			command=self.device_tree.xview
+		)
+		self.device_tree.configure(
+			yscrollcommand=device_tree_vsb.set,
+			xscrollcommand=device_tree_hsb.set
+		)
+		self.device_tree.grid(
+			row=1, column=0, columnspan=2, sticky="nsew"
+		)
+		device_tree_vsb.grid(
+			row=1, column=2, sticky="nse"
+		)
+		device_tree_hsb.grid(
+			row=2, column=0, columnspan=2, sticky="ew"
+		)
+
+		# Configure all rows and columns so they expand to fill cell
+		self.grid_columnconfigure(0, weight=3)
+		self.grid_columnconfigure(1, weight=4)
+		self.grid_rowconfigure(1, weight=1)
+
 
 		# Button to refresh list of devices
 		self.refresh_button = tk.Button(self,
 			text="Refresh",
-			command=self.update_device_list
-		)
-
-		# Packing items into the frame.
-		# TODO: Get scrollbar working
-		#self.device_list_scrollbar.grid()
-		self.device_list.grid(
-			row=0, rowspan=1, column=0, columnspan=1
-		)
-		self.device_list_scrollbar.grid(
-			row=0, rowspan=1, column=1, columnspan=1,
-			sticky=tk.N+tk.S
+			command=self.update_device_tree
 		)
 		self.refresh_button.grid(
-			row=1, rowspan=1, column=0, columnspan=2,
-			sticky=tk.W+tk.E
+			row=3, column=0, sticky="nsew"
 		)
+
+		# Button to connect to device
+		self.connect_button = tk.Button(self,
+			text="Connect to Device",
+			command=self.connect_to_selected_device
+		)
+		self.connect_button.grid(
+			row=3, column=1, columnspan=2, sticky="nsew"
+		)
+
+
+	def build_device_tree(self):
+
+		for col in DEVICE_TREE_COLUMNS:
+			self.device_tree.heading(
+				col,
+				text=col.title(),
+				command=lambda c=col: helpers.sortby(self.device_tree, c, 0)
+			)
+
+			# Adjust the column's width to the header string
+			self.device_tree.column(
+				col,
+				width=tkFont.Font().measure(col.title())+10
+			)
+
+		self.update_device_tree()
+
+
+	def update_device_tree(self):
+
+		# Clear tree
+		self.device_tree.delete(*self.device_tree.get_children())
+
+		self.devices = midihandler.get_device_list()
+
+
+		for device in self.devices:
+			self.device_tree.insert("", "end", values=device)
+
+			# Adjust column's width if necessary to fit each value
+			for ix, val in enumerate(device):
+				col_w = max(tkFont.Font().measure(val), tkFont.Font().measure(DEVICE_TREE_COLUMNS[ix]))+10
+
+				if self.device_tree.column(DEVICE_TREE_COLUMNS[ix], width=None)<col_w:
+					self.device_tree.column(DEVICE_TREE_COLUMNS[ix], width=col_w)
 
 
 	def poll(self):
-		now = self.device_list.curselection()
+
+		# Item was selected!
+		curItem = self.device_tree.focus()
+		now = self.device_tree.item(curItem)["values"]
+
 		if now != self.selected_device:
 			self.selection_changed(now)
 			self.selected_device = now
@@ -71,35 +152,42 @@ class Application(tk.Frame):
 
 
 	def selection_changed(self, selection):
-		if selection is None or selection is ():
+
+		if selection is None or selection is "":
 			print("No selected item.")
 		else:
-			print("Selection is now {}.".format(
-				self.devices[selection[0]]))
+			print("Selection is now {}.".format(selection))
 
-
-	def update_device_list(self):
-		self.devices = midihandler.getDeviceList()
-
-		self.device_list.delete(0, tk.END)
-		
-		for device in self.devices:
-			self.device_list.insert(
-				tk.END,
-				"{}|{}|{}".format(
-					device["driver"],
-					device["connection"],
-					device["is_input"]
-				)
-			)
 
 	def connect_to_selected_device(self):
-		pass
+
+		if self.selected_device == "":
+			print("No selected device to connect to.")
+		else:
+			if self.selected_device[3] == u'Input':
+				print("Conencting to INPUT device {}.".format(
+					self.selected_device[1]
+				))
+				helpers.open_event_viewer(
+					self.selected_device[0],
+					self.selected_device[2]
+				)
+			elif self.selected_device[3] == u'Output':
+				print("Conencting to OUTPUT device {}.".format(
+					self.selected_device[1]
+				))
+				helpers.open_event_sender(
+					self.selected_device[0],
+					self.selected_device[2]
+				)
+			else:
+				print("Something went really wrong here.")
 
 
 # create root and configure
 root = tk.Tk()
 root.title(WINDOW_TITLE)
+root.resizable(0,0)
 
 # start up the application
 app = Application(master=root)
